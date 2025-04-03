@@ -14,6 +14,7 @@ using UnityEngine;
 
 using Debug = UnityEngine.Debug;
 
+
 namespace Editor
 {
     [InitializeOnLoad]
@@ -433,6 +434,32 @@ namespace Editor
 
         private static StreamReader RunCommand(string command, string args, string progMsg, string progInfo, float progress)
         {
+            // Add diagnostic info
+            Debug.Log($"Running command: {command} {args}");
+            Debug.Log($"Current PATH: {Environment.GetEnvironmentVariable("PATH")}");
+
+            // Get the full path to the dotnet executable on macOS
+            if (command == "dotnet" && Application.platform == RuntimePlatform.OSXEditor)
+            {
+                // Check common dotnet installation locations on macOS
+                string[] possiblePaths = new[]
+                {
+                    "/usr/local/share/dotnet/dotnet",
+                    "/usr/local/bin/dotnet",
+                    "/opt/homebrew/bin/dotnet",
+                    "/opt/dotnet/dotnet"
+                };
+
+                foreach (var path in possiblePaths)
+                {
+                    if (File.Exists(path))
+                    {
+                        command = path;
+                        break;
+                    }
+                }
+            }
+
             // Run the command
             using var process = Process.Start(new ProcessStartInfo()
             {

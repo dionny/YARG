@@ -108,6 +108,8 @@ namespace YARG.Gameplay.Player
 
             engine.OnCountdownChange += OnCountdownChange;
 
+            engine.ProfileId = Player.Profile.Id;
+
             return engine;
         }
 
